@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func TestSolve(t *testing.T) {
+func TestSolveFor2(t *testing.T) {
     t.Run("should return product of numbers that sum 2020", func(t *testing.T) {
         tests := []struct {
             expenseReport []int
@@ -13,7 +13,7 @@ func TestSolve(t *testing.T) {
         }
 
         for _, test := range tests {
-            actual, err := Solve(test.expenseReport)
+            actual, err := Solve(test.expenseReport, 2)
 
             if err != nil {
                 t.Errorf("Unexpected error: %v", err)
@@ -26,10 +26,23 @@ func TestSolve(t *testing.T) {
 
     t.Run("should raise error if no numbers sum 2020", func(t *testing.T) {
         expenseReport := []int{1, 2, 3}
-        _, err := Solve(expenseReport)
+        _, err := Solve(expenseReport, 2)
 
         if err == nil {
             t.Error("Expected error to be raised, but didn't see one")
         }
     })
+}
+
+func TestSolveFor3(t *testing.T) {
+    expenseReport := []int{1721, 979, 366, 299, 675, 1456}
+    expected := 241861950
+    actual, err := Solve(expenseReport, 3)
+
+    if err != nil {
+        t.Errorf("Unexpected error: %v", err)
+    }
+    if actual != expected {
+        t.Errorf("Expected %d but got %d", expected, actual)
+    }
 }
