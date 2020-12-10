@@ -6,17 +6,38 @@ import (
 )
 
 func TestValidatePasswords(t *testing.T) {
-    passwords := []PasswordPolicy{
-        {1, 3, 'a', "abcde"},
-        {1, 3, 'b', "cdefg"},
-        {2, 9, 'c', "ccccccccc"},
-    }
-    actual := ValidatePasswords(passwords)
-    expected := 2
+    check := func (t *testing.T, policy Policy, expected int, passwords []PasswordPolicy) {
+        t.Helper()
+        actual := ValidatePasswords(passwords, policy)
 
-    if actual != expected {
-        t.Errorf("Expected %d but got %d", expected, actual)
+        if actual != expected {
+            t.Errorf("Expected %d but got %d", expected, actual)
+        }
     }
+
+    t.Run("should count valid passwords given occurrence policy", func(t *testing.T) {
+        passwords := []PasswordPolicy{
+            {1, 3, 'a', "abcde"},
+            {1, 3, 'b', "cdefg"},
+            {2, 9, 'c', "ccccccccc"},
+        }
+        check(t, OccurrencePolicy, 2, passwords)
+    })
+
+    t.Run("should count valid passwords given position policy", func(t *testing.T) {
+        passwords := []PasswordPolicy{{1, 3, 'a', "abcde"}}
+        check(t, PositionPolicy, 1, passwords)
+    })
+
+    t.Run("should fail if no match given position policy", func(t *testing.T) {
+        passwords := []PasswordPolicy{{1, 3, 'b', "cdefg"}}
+        check(t, PositionPolicy, 0, passwords)
+    })
+
+    t.Run("should fail when both positions match given position policy", func(t *testing.T) {
+        passwords := []PasswordPolicy{{2, 9, 'c', "ccccccccc"}}
+        check(t, PositionPolicy, 0, passwords)
+    })
 }
 
 func TestCountOccurrences(t *testing.T) {

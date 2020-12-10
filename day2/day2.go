@@ -17,9 +17,22 @@ type PasswordPolicy struct {
     password string
 }
 
-func (p PasswordPolicy) isValid() bool {
+func (p PasswordPolicy) isValid(policy Policy) bool {
+    return policy(p)
+}
+
+type Policy func(PasswordPolicy) bool
+
+func OccurrencePolicy(p PasswordPolicy) bool {
     occurs := CountOccurrences(p.password, p.char)
     return p.min <= occurs && p.max >= occurs
+}
+
+func PositionPolicy(p PasswordPolicy) bool {
+    passwordChars := []rune(p.password)
+    minMatch := passwordChars[p.min - 1] == p.char
+    maxMatch := passwordChars[p.max - 1] == p.char
+    return minMatch != maxMatch
 }
 
 func CountOccurrences(str string, char rune) (count int) {
@@ -31,9 +44,9 @@ func CountOccurrences(str string, char rune) (count int) {
     return
 }
 
-func ValidatePasswords(passwords []PasswordPolicy) (count int) {
+func ValidatePasswords(passwords []PasswordPolicy, policy Policy) (count int) {
     for _, password := range passwords {
-        if password.isValid() {
+        if password.isValid(policy) {
             count += 1
         }
     }
@@ -75,6 +88,6 @@ func main() {
     lines := strings.Split(string(content), "\n")
     passwords := ParsePasswords(lines)
 
-    result := ValidatePasswords(passwords)
+    result := ValidatePasswords(passwords, PositionPolicy)
     fmt.Println(result)
 }
