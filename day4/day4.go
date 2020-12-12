@@ -7,7 +7,10 @@ import (
 	"strings"
 	"os"
 	"strconv"
+	"regexp"
 )
+
+var validEyeColours = [...]string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
 
 type Passport struct {
 	birthYear  string
@@ -51,6 +54,15 @@ func RequiredFieldValidator(p Passport) bool {
 	return true
 }
 
+func indexOf(items []string, value string) int {
+	for i, item := range items {
+		if item == value {
+			return i
+		}
+	}
+	return -1
+}
+
 func FieldValueValidator(p Passport) bool {
 	if !RequiredFieldValidator(p) {
 		return false
@@ -73,7 +85,31 @@ func FieldValueValidator(p Passport) bool {
 	if v, _ := strconv.Atoi(p.expiryYear); v < 2020 || v > 2030 {
 		return false
 	}
-
+	heightPattern := regexp.MustCompile(`^(\d+)(cm|in)$`)
+	matches := heightPattern.FindStringSubmatch(p.height)
+	if len(matches) == 0 {
+		return false
+	}
+	height, _ := strconv.Atoi(matches[1])
+	switch matches[2] {
+	case "cm":
+		if height < 150 || height > 193 {
+			return false
+		}
+	case "in":
+		if height < 59 || height > 76 {
+			return false
+		}
+	default:
+		return false
+	}
+	hairColorPattern := regexp.MustCompile(`^#[0-9a-f]{6}$`)
+	if !hairColorPattern.MatchString(p.hairColor) {
+		return false
+	}
+	if indexOf(validEyeColours[:], p.eyeColor) == -1 {
+		return false
+	}
 	if len(p.passportId) != 9 {
 		return false
 	}
@@ -132,6 +168,6 @@ func main() {
 
 	input := strings.Trim(string(content), "\n")
 	passports := ParsePassports(input)
-	result := ValidatePassports(passports, RequiredFieldValidator)
+	result := ValidatePassports(passports, FieldValueValidator)
 	fmt.Println(result)
 }
