@@ -1,20 +1,20 @@
 package main
 
 import (
-	"strconv"
-	"strings"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func BinaryStringToInt(value string) int {
 	i, err := strconv.ParseInt(value, 2, 64)
 	if err != nil {
-        panic(err)
-    }
+		panic(err)
+	}
 	return int(i)
 }
 
@@ -53,7 +53,7 @@ func EmptySeatId(routesStr string) int {
 	}
 	sort.Ints(seatIds)
 	for i, seatId := range seatIds {
-		if seatIds[0] + i != seatId {
+		if seatIds[0]+i != seatId {
 			return seatId - 1
 		}
 	}

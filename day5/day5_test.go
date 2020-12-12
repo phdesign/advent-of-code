@@ -5,7 +5,7 @@ import "testing"
 func TestBinaryStringToInt(t *testing.T) {
 	tests := []struct {
 		value string
-		want int
+		want  int
 	}{
 		{"101", 5},
 		{"100", 4},
@@ -14,7 +14,7 @@ func TestBinaryStringToInt(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Run(test.value, func (t *testing.T)  {
+		t.Run(test.value, func(t *testing.T) {
 			got := BinaryStringToInt(test.value)
 			assertIntEqual(t, test.want, got)
 		})
@@ -24,7 +24,7 @@ func TestBinaryStringToInt(t *testing.T) {
 func TestSeatId(t *testing.T) {
 	tests := []struct {
 		route string
-		want int
+		want  int
 	}{
 		{"BFFFBBFRRR", 567},
 		{"FFFBBBFRRR", 119},
@@ -32,7 +32,7 @@ func TestSeatId(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Run(test.route, func (t *testing.T)  {
+		t.Run(test.route, func(t *testing.T) {
 			got := SeatId(test.route)
 			assertIntEqual(t, test.want, got)
 		})
