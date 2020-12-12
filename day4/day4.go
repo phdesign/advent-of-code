@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"strings"
 	"os"
-	"strconv"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 var validEyeColours = [...]string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}

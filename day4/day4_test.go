@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
-	"fmt"
 )
 
 func TestParseFields(t *testing.T) {
@@ -48,8 +48,8 @@ iyr:2011 ecl:brn hgt:59in`
 
 func TestPassports(t *testing.T) {
 	t.Run("should return true when all required fields are set given required fields validator", func(t *testing.T) {
-		passports := []Passport {
-			Passport{birthYear: "1937", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
+		passports := []Passport{
+			{birthYear: "1937", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
 		}
 		for _, passport := range passports {
 			t.Run("", func(t *testing.T) {
@@ -60,8 +60,8 @@ func TestPassports(t *testing.T) {
 	})
 
 	t.Run("should return false when required fields are missing given required fields validator", func(t *testing.T) {
-		passports := []Passport {
-			Passport{birthYear: "1929", issueYear: "2013", expiryYear: "2023", height: "", hairColor: "#cfa07d", eyeColor: "amb", passportId: "028048884", countryId: "350"},
+		passports := []Passport{
+			{birthYear: "1929", issueYear: "2013", expiryYear: "2023", height: "", hairColor: "#cfa07d", eyeColor: "amb", passportId: "028048884", countryId: "350"},
 		}
 		for _, passport := range passports {
 			t.Run("", func(t *testing.T) {
@@ -72,9 +72,9 @@ func TestPassports(t *testing.T) {
 	})
 
 	t.Run("should return true when all fields are valid given field values validator", func(t *testing.T) {
-		passports := []Passport {
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "060033327", countryId: "147"},
+		passports := []Passport{
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "060033327", countryId: "147"},
 		}
 		for _, passport := range passports {
 			t.Run("", func(t *testing.T) {
@@ -85,16 +85,16 @@ func TestPassports(t *testing.T) {
 	})
 
 	t.Run("should return false when any fields are invalid given field values validator", func(t *testing.T) {
-		passports := []Passport {
-			Passport{birthYear: "2003", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "06003332", countryId: "147"},
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "86003332a", countryId: "147"},
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "purple", passportId: "860033327", countryId: "147"},
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#xffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183in", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "59cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "59", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
-			Passport{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "59ri", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
+		passports := []Passport{
+			{birthYear: "2003", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "06003332", countryId: "147"},
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "86003332a", countryId: "147"},
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#fffffd", eyeColor: "purple", passportId: "860033327", countryId: "147"},
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183cm", hairColor: "#xffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "183in", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "59cm", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "59", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
+			{birthYear: "2002", issueYear: "2017", expiryYear: "2020", height: "59ri", hairColor: "#fffffd", eyeColor: "gry", passportId: "860033327", countryId: "147"},
 		}
 		for _, passport := range passports {
 			t.Run("", func(t *testing.T) {
@@ -137,7 +137,7 @@ iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719`
 
 	for _, passport := range passports {
 		name := fmt.Sprintf("%v", passport)
-		t.Run(name, func (t *testing.T)  {
+		t.Run(name, func(t *testing.T) {
 			got := ValidatePassports([]Passport{passport}, FieldValueValidator)
 			assertIntEqual(t, got, 1)
 		})
@@ -162,7 +162,7 @@ pid:3556412378 byr:2007`
 
 	for _, passport := range passports {
 		name := fmt.Sprintf("%v", passport)
-		t.Run(name, func (t *testing.T)  {
+		t.Run(name, func(t *testing.T) {
 			got := ValidatePassports([]Passport{passport}, FieldValueValidator)
 			assertIntEqual(t, got, 0)
 		})
