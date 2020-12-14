@@ -64,16 +64,13 @@ func ParseBag(text string, cache *Cache) {
 	}
 }
 
-func ParseBags(input string) (bags []Bag) {
+func ParseBags(input string) *Cache {
 	lines := strings.Split(input, "\n")
 	cache := make(Cache)
 	for _, line := range lines {
 		ParseBag(line, &cache)
 	}
-	for _, bag := range cache {
-		bags = append(bags, *bag)
-	}
-	return
+	return &cache
 }
 
 func CountContainingBags(input string, bagColor string) int {
