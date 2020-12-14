@@ -9,7 +9,8 @@ import (
 
 type Bag struct {
 	color    string
-	contains []Bag
+	children []Bag
+	parents  []Bag
 }
 
 type BagParseError struct {
@@ -17,14 +18,14 @@ type BagParseError struct {
 }
 
 func (e *BagParseError) Error() string {
-	return fmt.Sprintf("Unable to parse bag %q")
+	return fmt.Sprintf("Unable to parse bag %q", e.text)
 }
 
-var bagPattern = regexp.MustCompile(`^((\w+ ){1,2})bags contain(.*)$`)
-var innerPattern = regexp.MustCompile(`^ ?(\d )+((\w+ ){1,2})bags.?$`)
+var bagPattern = regexp.MustCompile(`^((\w+ ){1,2})bags contain (.*)$`)
+var childPattern = regexp.MustCompile(`^(\d )+((\w+ ){1,2})bags.?$`)
 
-func ParseInner(text string) (int, Bag, error) {
-	matches := innerPattern.FindStringSubmatch(text)
+func ParseChild(text string) (int, *Bag, error) {
+	matches := childPattern.FindStringSubmatch(text)
 	if len(matches) == 0 {
 		return 0, nil, &BagParseError{text}
 	}
@@ -33,25 +34,28 @@ func ParseInner(text string) (int, Bag, error) {
 		return 0, nil, err
 	}
 	color := strings.TrimSpace(matches[2])
-	bag := Bag{color}
+	bag := new(Bag)
+	bag.color = color
 	return qty, bag, nil
 }
 
-func ParseBag(text string) (Bag, error) {
+func ParseBag(text string) (*Bag, error) {
 	matches := bagPattern.FindStringSubmatch(text)
 	if len(matches) == 0 {
 		return nil, &BagParseError{text}
 	}
 	color := strings.TrimSpace(matches[1])
-	bag := Bag{color}
-	contents := strings.Split(matches[len(matches)-1])
-	for _, inner := range contents {
-		qty, innerBag, err := ParseBag(inner)
+	bag := new(Bag)
+	bag.color = color
+	contents := strings.Split(matches[len(matches)-1], ", ")
+	for _, childText := range contents {
+		qty, child, err := ParseChild(childText)
 		if err != nil {
 			continue
 		}
 		for i := 0; i < qty; i++ {
-			append(bag.contains, innerBag)
+			bag.children = append(bag.children, *child)
+			child.parents = append(child.parents, *bag)
 		}
 	}
 	return bag, nil
@@ -64,7 +68,8 @@ func ParseBags(input string) (bags []Bag) {
 		if err != nil {
 			continue
 		}
-		append(bags, bag)
+		bags = append(bags, *bag)
 	}
+	fmt.Println(bags[0])
 	return
 }
