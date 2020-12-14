@@ -9,67 +9,74 @@ import (
 
 type Bag struct {
 	color    string
-	children []Bag
-	parents  []Bag
+	children []*Bag
+	parents  []*Bag
 }
 
-type BagParseError struct {
-	text string
+func (b Bag) String() string {
+	return fmt.Sprintf("Bag{color: %q, children: [%d], parents: [%d]}", b.color, len(b.children), len(b.parents))
 }
 
-func (e *BagParseError) Error() string {
-	return fmt.Sprintf("Unable to parse bag %q", e.text)
+type Cache struct {
+	bags map[string]*Bag
+}
+
+func (c *Cache) GetOrAdd(color string) *Bag {
+	if c.bags == nil {
+		c.bags = make(map[string]*Bag)
+	}
+	bag, ok := c.bags[color]
+	if !ok {
+		bag = &Bag{color: color}
+		c.bags[color] = bag
+	}
+	return bag
 }
 
 var bagPattern = regexp.MustCompile(`^((\w+ ){1,2})bags contain (.*)$`)
-var childPattern = regexp.MustCompile(`^(\d )+((\w+ ){1,2})bags.?$`)
+var childPattern = regexp.MustCompile(`^(\d )+((\w+ ){1,2})bags?.?$`)
 
-func ParseChild(text string) (int, *Bag, error) {
+func ParseChild(text string, parent *Bag, cache *Cache) {
+	if text == "no other bags." {
+		return
+	}
 	matches := childPattern.FindStringSubmatch(text)
 	if len(matches) == 0 {
-		return 0, nil, &BagParseError{text}
+		panic(fmt.Sprintf("Unable to parse child %q", text))
 	}
 	qty, err := strconv.Atoi(strings.TrimSpace(matches[1]))
 	if err != nil {
-		return 0, nil, err
+		panic(fmt.Sprintf("Unable to parse child qty %q", strings.TrimSpace(matches[1])))
 	}
 	color := strings.TrimSpace(matches[2])
-	bag := new(Bag)
-	bag.color = color
-	return qty, bag, nil
+	bag := cache.GetOrAdd(color)
+	for i := 0; i < qty; i++ {
+		parent.children = append(parent.children, bag)
+		bag.parents = append(bag.parents, parent)
+	}
 }
 
-func ParseBag(text string) (*Bag, error) {
+func ParseBag(text string, cache *Cache) {
 	matches := bagPattern.FindStringSubmatch(text)
 	if len(matches) == 0 {
-		return nil, &BagParseError{text}
+		panic(fmt.Sprintf("Unable to parse bag %q", text))
 	}
 	color := strings.TrimSpace(matches[1])
-	bag := new(Bag)
-	bag.color = color
+	bag := cache.GetOrAdd(color)
 	contents := strings.Split(matches[len(matches)-1], ", ")
 	for _, childText := range contents {
-		qty, child, err := ParseChild(childText)
-		if err != nil {
-			continue
-		}
-		for i := 0; i < qty; i++ {
-			bag.children = append(bag.children, *child)
-			child.parents = append(child.parents, *bag)
-		}
+		ParseChild(childText, bag, cache)
 	}
-	return bag, nil
 }
 
 func ParseBags(input string) (bags []Bag) {
 	lines := strings.Split(input, "\n")
+	cache := new(Cache)
 	for _, line := range lines {
-		bag, err := ParseBag(line)
-		if err != nil {
-			continue
-		}
+		ParseBag(line, cache)
+	}
+	for _, bag := range cache.bags {
 		bags = append(bags, *bag)
 	}
-	fmt.Println(bags[0])
 	return
 }
