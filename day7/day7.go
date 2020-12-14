@@ -17,18 +17,13 @@ func (b Bag) String() string {
 	return fmt.Sprintf("Bag{color: %q, children: [%d], parents: [%d]}", b.color, len(b.children), len(b.parents))
 }
 
-type Cache struct {
-	bags map[string]*Bag
-}
+type Cache map[string]*Bag
 
 func (c *Cache) GetOrAdd(color string) *Bag {
-	if c.bags == nil {
-		c.bags = make(map[string]*Bag)
-	}
-	bag, ok := c.bags[color]
+	bag, ok := (*c)[color]
 	if !ok {
 		bag = &Bag{color: color}
-		c.bags[color] = bag
+		(*c)[color] = bag
 	}
 	return bag
 }
@@ -71,12 +66,16 @@ func ParseBag(text string, cache *Cache) {
 
 func ParseBags(input string) (bags []Bag) {
 	lines := strings.Split(input, "\n")
-	cache := new(Cache)
+	cache := make(Cache)
 	for _, line := range lines {
-		ParseBag(line, cache)
+		ParseBag(line, &cache)
 	}
-	for _, bag := range cache.bags {
+	for _, bag := range cache {
 		bags = append(bags, *bag)
 	}
 	return
+}
+
+func CountContainingBags(input string, bagColor string) int {
+	return 0
 }

@@ -5,6 +5,21 @@ import (
 	"testing"
 )
 
+func TestCountContainingBags(t *testing.T) {
+	input := `light red bags contain 1 bright white bag, 2 muted yellow bags.
+dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+bright white bags contain 1 shiny gold bag.
+muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
+shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+faded blue bags contain no other bags.
+dotted black bags contain no other bags.`
+	got := CountContainingBags(input, "shiny gold")
+	want := 4
+	assertIntEqual(t, got, want)
+}
+
 func TestParseBags(t *testing.T) {
 	input := `light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
@@ -25,11 +40,11 @@ func TestParseBag(t *testing.T) {
 	cache := Cache{}
 	ParseBag(input, &cache)
 
-	got := cache.bags["light red"]
+	got := cache["light red"]
 	want := Bag{color: "light red", children: []*Bag{
-		cache.bags["bright white"],
-		cache.bags["muted yellow"],
-		cache.bags["muted yellow"],
+		cache["bright white"],
+		cache["muted yellow"],
+		cache["muted yellow"],
 	}}
 
 	if !reflect.DeepEqual(*got, want) {
@@ -43,7 +58,7 @@ func TestParseChild(t *testing.T) {
 	cache := Cache{}
 	ParseChild(input, &parent, &cache)
 
-	got := cache.bags["bright white"]
+	got := cache["bright white"]
 	want := Bag{color: "bright white", parents: []*Bag{&parent}}
 
 	if !reflect.DeepEqual(*got, want) {
@@ -52,22 +67,6 @@ func TestParseChild(t *testing.T) {
 }
 
 func TestCache(t *testing.T) {
-	t.Run("cache.bags should be uninitialised when first created", func(t *testing.T) {
-		cache := Cache{}
-		if cache.bags != nil {
-			t.Error("Wanted cache.bags to be nil, but wasn't")
-		}
-	})
-
-	t.Run("GetOrAdd should lazy initialise cache.bags", func(t *testing.T) {
-		cache := Cache{}
-		cache.GetOrAdd("bright pink")
-
-		if cache.bags == nil {
-			t.Error("Wanted cache.bags to be initialised, but wasn't")
-		}
-	})
-
 	t.Run("GetOrAdd should create new bag when cache miss", func(t *testing.T) {
 		cache := Cache{}
 		got := cache.GetOrAdd("bright pink")
