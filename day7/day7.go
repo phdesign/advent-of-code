@@ -1,7 +1,10 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -64,15 +67,71 @@ func ParseBag(text string, cache *Cache) {
 	}
 }
 
-func ParseBags(input string) *Cache {
+func ParseBags(input string) Cache {
 	lines := strings.Split(input, "\n")
 	cache := make(Cache)
 	for _, line := range lines {
 		ParseBag(line, &cache)
 	}
-	return &cache
+	return cache
+}
+
+func FindAncestors(bag *Bag) (result []string) {
+	for _, parent := range bag.parents {
+		result = append(result, parent.color)
+		grandparents := FindAncestors(parent)
+		for _, grandparent := range grandparents {
+			result = append(result, grandparent)
+		}
+	}
+	return
+}
+
+func CountUniqueAncestors(bag *Bag) int {
+	ancestors := FindAncestors(bag)
+	hash := make(map[string]bool)
+	for _, ancestor := range ancestors {
+		hash[ancestor] = true
+	}
+	return len(hash)
 }
 
 func CountContainingBags(input string, bagColor string) int {
-	return 0
+	cache := ParseBags(input)
+	bag, ok := cache[bagColor]
+	if !ok {
+		panic(fmt.Sprintf("No bag found with color %q", bagColor))
+	}
+	return CountUniqueAncestors(bag)
+}
+
+func CountChildrenRecursive(bag *Bag) (count int) {
+	for _, child := range bag.children {
+		count++
+		count += CountChildrenRecursive(child)
+	}
+	return
+}
+
+func CountChildBags(input string, bagColor string) int {
+	cache := ParseBags(input)
+	bag, ok := cache[bagColor]
+	if !ok {
+		panic(fmt.Sprintf("No bag found with color %q", bagColor))
+	}
+	return CountChildrenRecursive(bag)
+}
+
+func main() {
+	flag.Parse()
+	filename := flag.Arg(0)
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	input := strings.Trim(string(content), "\n")
+	result := CountChildBags(input, "shiny gold")
+	fmt.Println(result)
 }
