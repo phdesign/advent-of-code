@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func TestHack(t *testing.T) {
+func TestHack1(t *testing.T) {
 	input := `35
 20
 15
@@ -24,8 +24,36 @@ func TestHack(t *testing.T) {
 309
 576`
 	preambleLength := 5
-	got := Hack(input, preambleLength)
+	got := Hack1(input, preambleLength)
 	want := 127
+
+	assertIntEqual(t, got, want)
+}
+
+func TestHack2(t *testing.T) {
+	input := `35
+20
+15
+25
+47
+40
+62
+55
+65
+95
+102
+117
+150
+182
+127
+219
+299
+277
+309
+576`
+	preambleLength := 5
+	got := Hack2(input, preambleLength)
+	want := 62
 
 	assertIntEqual(t, got, want)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -40,10 +41,10 @@ func find2ThatSum(values []int, sum int) ([]int, bool) {
 	return []int{}, false
 }
 
-func findWeakness(items []int, preambleLength int) int {
-	for i := preambleLength; i < len(items); i++ {
-		item := items[i]
-		preamble := items[i-preambleLength : i]
+func findWeakness(values []int, preambleLength int) int {
+	for i := preambleLength; i < len(values); i++ {
+		item := values[i]
+		preamble := values[i-preambleLength : i]
 		if _, ok := find2ThatSum(preamble, item); !ok {
 			return item
 		}
@@ -51,10 +52,35 @@ func findWeakness(items []int, preambleLength int) int {
 	panic("No weakness found")
 }
 
-func Hack(input string, preambleLength int) int {
+func findContiguousNumbersThatSum(values []int, sum int) []int {
+	for i, val := range values {
+		result := []int{val}
+		for j := i + 1; j < len(values); j++ {
+			result = append(result, values[j])
+			rangeSum := sumAll(result)
+			if rangeSum == sum {
+				return result
+			} else if rangeSum > sum {
+				break
+			}
+		}
+	}
+	panic(fmt.Sprintf("No contiguous numbers found that sum to %d", sum))
+}
+
+func Hack1(input string, preambleLength int) int {
 	items := strings.Split(input, "\n")
 	numbers := stringsToInts(items)
 	return findWeakness(numbers, preambleLength)
+}
+
+func Hack2(input string, preambleLength int) int {
+	items := strings.Split(input, "\n")
+	numbers := stringsToInts(items)
+	weakness := findWeakness(numbers, preambleLength)
+	weakRange := findContiguousNumbersThatSum(numbers, weakness)
+	sort.Ints(weakRange)
+	return weakRange[0] + weakRange[len(weakRange)-1]
 }
 
 func main() {
@@ -67,6 +93,6 @@ func main() {
 	}
 
 	input := strings.Trim(string(content), "\n")
-	result := Hack(input, 25)
+	result := Hack2(input, 25)
 	fmt.Println(result)
 }
