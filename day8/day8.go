@@ -1,32 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 )
-
-//type Context struct {
-//accumulator int
-//pc          int
-//}
-
-//type Noop struct{}
-
-//func (n *Noop) Interpret(context *Context) {
-//}
-
-//type Accumulate struct {
-//argument int
-//}
-
-//func (a *Accumulate) Interpret(context *Context) {
-//context.accumulator += a.argument
-//}
-
-//func NewAccumulate(argument int) *Accumulate {
-//return &Accumulate{argument: argument}
-//}
 
 type InfiniteLoopError struct {
 	instruction int
@@ -85,4 +66,40 @@ func Evaluate(instructions []Instruction) (int, error) {
 	}
 
 	return acc, nil
+}
+
+func Debug(instructions []Instruction) int {
+	for i, instruction := range instructions {
+		var fix_op string
+		switch instruction.operation {
+		case "nop":
+			fix_op = "jmp"
+		case "jmp":
+			fix_op = "nop"
+		default:
+			continue
+		}
+
+		fix := append([]Instruction{}, instructions...)
+		fix[i] = Instruction{fix_op, instruction.argument}
+		if result, err := Evaluate(fix); err == nil {
+			return result
+		}
+	}
+	panic("No way to fix the program!")
+}
+
+func main() {
+	flag.Parse()
+	filename := flag.Arg(0)
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	input := strings.Trim(string(content), "\n")
+	instructions := Parse(input)
+	result := Debug(instructions)
+	fmt.Println(result)
 }
