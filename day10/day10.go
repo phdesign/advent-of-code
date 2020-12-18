@@ -1,7 +1,10 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -34,10 +37,29 @@ func FindJoltDifferences(items []int) []int {
 			prev = items[i-1]
 		}
 		difference := item - prev
-		fmt.Printf("%d - %d = %d\n", item, prev, difference)
 		diffCount[difference-1]++
 	}
 	// Last difference is always 3
 	diffCount[2]++
 	return diffCount
+}
+
+func MultiplyEnds(items []int) int {
+	return items[0] * items[len(items)-1]
+}
+
+func main() {
+	flag.Parse()
+	filename := flag.Arg(0)
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	input := strings.Trim(string(content), "\n")
+	items := Parse(input)
+	diffs := FindJoltDifferences(items)
+	result := MultiplyEnds(diffs)
+	fmt.Println(result)
 }
