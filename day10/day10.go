@@ -64,19 +64,20 @@ func Combinations(n int, r int) int {
 
 // 1, 2, 3, 4
 // 1, 2, 3
-// 1, 2, 4
-// 1, 3, 4
-// 2, 3, 4
+// 1, 2,    4
+// 1,    3, 4
+//    2, 3, 4
 // 1, 2
-// 1, 3
-// 1, 4
-// 2, 3
-// 2, 4
-// 3, 4
+// 1,    3
+// 1,       4
+//    2, 3
+//    2,    4
+//       3, 4
 // 1
-// 2
-// 3
-// 41
+//    2
+//       3
+//          4
+// 0  0  0  1
 func MakeCombinations(items []int) {
 	combinations := make([][]int, 0)
 	for _, item := range items {
@@ -100,20 +101,12 @@ func ShortestPath(sorted []int) []int {
 
 // (0), 1, 4, 5, 7, (10)
 // (0), 1, 4, 7, (10)
-func CountCombinations(items []int) (count int) {
-	adapter := items[0]
-	for i, item := range items[1:] {
-		fmt.Printf("%d, %d, %d (%d)\n", i, adapter, item, count)
-		if item > adapter+3 {
-			fmt.Println("no good")
-			return
-		}
-		if i == len(items) {
-			fmt.Println("end")
-			count++
-			return
-		}
-		count += CountCombinations(items[i+1:])
+func CountCombinations(sorted []int) (count int) {
+	shortestPath := ShortestPath(sorted)
+	from := len(shortestPath)
+	to := len(sorted)
+	for i := from; i < to; i++ {
+		count += Combinations(to, i)
 	}
 	return
 }
