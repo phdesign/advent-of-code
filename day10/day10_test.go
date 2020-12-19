@@ -91,6 +91,28 @@ func TestFactorial(t *testing.T) {
 	assertIntEqual(t, got, want)
 }
 
+func TestMask(t *testing.T) {
+	input := []int{1, 2, 3}
+	tests := []struct {
+		mask int
+		want []int
+	}{
+		{1, []int{1}},
+		{2, []int{2}},
+		{3, []int{1, 2}},
+		{4, []int{3}},
+		{5, []int{1, 3}},
+		{6, []int{2, 3}},
+		{7, []int{1, 2, 3}},
+	}
+	for _, test := range tests {
+		t.Run(strconv.Itoa(test.mask), func(t *testing.T) {
+			got := Mask(input, test.mask)
+			assertIntSliceEqual(t, got, test.want)
+		})
+	}
+}
+
 func TestCombinations(t *testing.T) {
 	tests := []struct {
 		n    int
@@ -112,8 +134,38 @@ func TestCombinations(t *testing.T) {
 }
 
 func TestMakeCombination(t *testing.T) {
-	input := []int{1, 2, 3}
-	MakeCombinations(input)
+	tests := []struct {
+		input []int
+		want  int
+	}{
+		{[]int{1, 2, 3, 4, 5, 6}, 63},
+		{[]int{1, 2, 3, 4, 5}, 31},
+		{[]int{1, 2, 3, 4}, 15},
+		{[]int{1, 2, 3}, 7},
+	}
+	for i, test := range tests {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			got := MakeCombinations(test.input)
+			assertIntEqual(t, len(got), test.want)
+		})
+	}
+}
+func TestMakeCombinationRecursive(t *testing.T) {
+	tests := []struct {
+		input []int
+		want  int
+	}{
+		{[]int{1, 2, 3, 4, 5, 6}, 63},
+		{[]int{1, 2, 3, 4, 5}, 31},
+		{[]int{1, 2, 3, 4}, 15},
+		{[]int{1, 2, 3}, 7},
+	}
+	for i, test := range tests {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			got := MakeCombinationsRecursive(test.input, 0)
+			assertIntEqual(t, len(got), test.want)
+		})
+	}
 }
 
 func assertIntEqual(t *testing.T, got, want int) {

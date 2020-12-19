@@ -62,28 +62,41 @@ func Combinations(n int, r int) int {
 	return Factorial(n) / (Factorial(r) * Factorial(n-r))
 }
 
-// 1, 2, 3, 4
-// 1, 2, 3
-// 1, 2,    4
-// 1,    3, 4
-//    2, 3, 4
-// 1, 2
-// 1,    3
-// 1,       4
-//    2, 3
-//    2,    4
-//       3, 4
-// 1
-//    2
-//       3
-//          4
-// 0  0  0  1
-func MakeCombinations(items []int) {
-	combinations := make([][]int, 0)
-	for _, item := range items {
-		combinations = append(combinations, []int{item})
+func Mask(items []int, mask int) (result []int) {
+	for i, item := range items {
+		if (1<<i)&mask != 0 {
+			result = append(result, item)
+		}
 	}
-	fmt.Println(combinations)
+	return
+}
+
+func MakeCombinations(items []int) [][]int {
+	length := 1 << len(items)
+	combinations := make([][]int, 0)
+	for i := 1; i < length; i++ {
+		combination := Mask(items, i)
+		combinations = append(combinations, combination)
+	}
+	return combinations
+}
+
+func MakeCombinationsRecursive(items []int, depth int) (combinations [][]int) {
+	if depth >= len(items) {
+		return
+	}
+
+	other := MakeCombinationsRecursive(items, depth+1)
+	combinations = append(combinations, other...)
+
+	skip := make([]int, depth)
+	copy(skip, items[:depth])
+	skip = append(skip, items[depth+1:]...)
+	other = MakeCombinationsRecursive(skip, depth)
+	combinations = append(combinations, other...)
+
+	combinations = append(combinations, items[:depth+1])
+	return
 }
 
 func ShortestPath(sorted []int) []int {
