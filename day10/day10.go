@@ -81,21 +81,29 @@ func MakeCombinations(items []int) [][]int {
 	return combinations
 }
 
-func MakeCombinationsRecursive(items []int, depth int) (combinations [][]int) {
+func MakeCombinationsRecursive(items []int, depth int, last int) (combinations [][]int) {
 	if depth >= len(items) {
 		return
 	}
+	if depth == 0 && items[depth] > 3 {
+		return
+	}
+	if depth > 0 && items[depth]-items[depth-1] > 3 {
+		return
+	}
 
-	other := MakeCombinationsRecursive(items, depth+1)
+	other := MakeCombinationsRecursive(items, depth+1, last)
 	combinations = append(combinations, other...)
 
 	skip := make([]int, depth)
 	copy(skip, items[:depth])
 	skip = append(skip, items[depth+1:]...)
-	other = MakeCombinationsRecursive(skip, depth)
+	other = MakeCombinationsRecursive(skip, depth, last)
 	combinations = append(combinations, other...)
 
-	combinations = append(combinations, items[:depth+1])
+	if items[depth] == last {
+		combinations = append(combinations, items[:depth+1])
+	}
 	return
 }
 
@@ -139,7 +147,7 @@ func main() {
 
 	input := strings.Trim(string(content), "\n")
 	items := Sort(Parse(input))
-	diffs := FindJoltDifferences(items)
-	result := MultiplyEnds(diffs)
+	combinations := MakeCombinationsRecursive(items, 0, items[len(items)-1])
+	result := len(combinations)
 	fmt.Println(result)
 }

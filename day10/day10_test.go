@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 	"testing"
@@ -31,7 +32,6 @@ func TestFindJoltDifferences(t *testing.T) {
 }
 
 func TestCountCombinations(t *testing.T) {
-	t.SkipNow()
 	tests := []struct {
 		input string
 		want  int
@@ -40,20 +40,20 @@ func TestCountCombinations(t *testing.T) {
 			"1\n4\n5\n7",
 			2,
 		},
-		//{
-		//"16\n10\n15\n5\n1\n11\n7\n19\n6\n12\n4",
-		//8,
-		//},
-		//{
-		//"28\n33\n18\n42\n31\n14\n46\n20\n48\n47\n24\n23\n49\n45\n19\n38\n39\n11\n1\n32\n25\n35\n8\n17\n7\n9\n4\n2\n34\n10\n3",
-		//19208,
-		//},
+		{
+			"16\n10\n15\n5\n1\n11\n7\n19\n6\n12\n4",
+			8,
+		},
+		{
+			"28\n33\n18\n42\n31\n14\n46\n20\n48\n47\n24\n23\n49\n45\n19\n38\n39\n11\n1\n32\n25\n35\n8\n17\n7\n9\n4\n2\n34\n10\n3",
+			19208,
+		},
 	}
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			items := Sort(Parse(test.input))
-			got := CountCombinations(items)
-			assertIntEqual(t, got, test.want)
+			got := MakeCombinationsRecursive(items, 0, items[len(items)-1])
+			assertIntEqual(t, len(got), test.want)
 		})
 	}
 }
@@ -67,6 +67,18 @@ func TestShortestPath(t *testing.T) {
 	got := ShortestPath(items)
 	want := []int{1, 4, 7}
 	assertIntSliceEqual(t, got, want)
+}
+
+func TestShortestPath2(t *testing.T) {
+	input := "28\n33\n18\n42\n31\n14\n46\n20\n48\n47\n24\n23\n49\n45\n19\n38\n39\n11\n1\n32\n25\n35\n8\n17\n7\n9\n4\n2\n34\n10\n3"
+	items := Sort(Parse(input))
+	got := len(ShortestPath(items))
+	long := math.Pow(2, float64(len(items)))
+	short := math.Pow(2, float64(got))
+	combinations := long - short
+	fmt.Printf("combinations: %f", combinations)
+	want := 19208
+	assertIntEqual(t, got, want)
 }
 
 func TestSort(t *testing.T) {
@@ -150,7 +162,9 @@ func TestMakeCombination(t *testing.T) {
 		})
 	}
 }
+
 func TestMakeCombinationRecursive(t *testing.T) {
+	t.SkipNow()
 	tests := []struct {
 		input []int
 		want  int
@@ -162,7 +176,8 @@ func TestMakeCombinationRecursive(t *testing.T) {
 	}
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got := MakeCombinationsRecursive(test.input, 0)
+			got := MakeCombinationsRecursive(test.input, 0, test.input[len(test.input)-1])
+			fmt.Println(got)
 			assertIntEqual(t, len(got), test.want)
 		})
 	}
