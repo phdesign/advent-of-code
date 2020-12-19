@@ -26,15 +26,21 @@ func Parse(input string) []int {
 	return toInts(fields)
 }
 
-func FindJoltDifferences(items []int) []int {
-	sort.Ints(items)
+func Sort(items []int) []int {
+	sorted := make([]int, len(items))
+	copy(sorted, items)
+	sort.Ints(sorted)
+	return sorted
+}
+
+func FindJoltDifferences(sorted []int) []int {
 	diffCount := make([]int, 3)
-	for i, item := range items {
+	for i, item := range sorted {
 		var prev int
 		if i == 0 {
 			prev = 0
 		} else {
-			prev = items[i-1]
+			prev = sorted[i-1]
 		}
 		difference := item - prev
 		diffCount[difference-1]++
@@ -42,6 +48,74 @@ func FindJoltDifferences(items []int) []int {
 	// Last difference is always 3
 	diffCount[2]++
 	return diffCount
+}
+
+func Factorial(num int) int {
+	f := 1
+	for i := 1; i <= num; i++ {
+		f = f * i
+	}
+	return f
+}
+
+func Combinations(n int, r int) int {
+	return Factorial(n) / (Factorial(r) * Factorial(n-r))
+}
+
+// 1, 2, 3, 4
+// 1, 2, 3
+// 1, 2, 4
+// 1, 3, 4
+// 2, 3, 4
+// 1, 2
+// 1, 3
+// 1, 4
+// 2, 3
+// 2, 4
+// 3, 4
+// 1
+// 2
+// 3
+// 41
+func MakeCombinations(items []int) {
+	combinations := make([][]int, 0)
+	for _, item := range items {
+		combinations = append(combinations, []int{item})
+	}
+	fmt.Println(combinations)
+}
+
+func ShortestPath(sorted []int) []int {
+	i := 1
+	for i < len(sorted)-1 {
+		difference := sorted[i+1] - sorted[i-1]
+		if difference <= 3 {
+			sorted = append(sorted[:i], sorted[i+1:]...)
+		} else {
+			i++
+		}
+	}
+	return sorted
+}
+
+// (0), 1, 4, 5, 7, (10)
+// (0), 1, 4, 7, (10)
+func CountCombinations(items []int) (count int) {
+	adapter := items[0]
+	for i, item := range items[1:] {
+		fmt.Printf("%d, %d, %d (%d)\n", i, adapter, item, count)
+		if item > adapter+3 {
+			fmt.Println("no good")
+			return
+		}
+		if i == len(items) {
+			fmt.Println("end")
+			count++
+			return
+		}
+		count += CountCombinations(items[i+1:])
+	}
+	return
 }
 
 func MultiplyEnds(items []int) int {
@@ -58,7 +132,7 @@ func main() {
 	}
 
 	input := strings.Trim(string(content), "\n")
-	items := Parse(input)
+	items := Sort(Parse(input))
 	diffs := FindJoltDifferences(items)
 	result := MultiplyEnds(diffs)
 	fmt.Println(result)
