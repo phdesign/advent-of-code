@@ -50,7 +50,7 @@ func TestPart2(t *testing.T) {
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			items := Sort(Parse(test.input))
-			got := CountCombinations(items, 0, items[len(items)-1])
+			got := CountCombinations(items)
 			assertIntEqual(t, got, test.want)
 		})
 	}
@@ -68,7 +68,7 @@ func TestCountCombinations(t *testing.T) {
 	}
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got := CountCombinations(test.input, 0, test.input[len(test.input)-1])
+			got := CountCombinations(test.input)
 			assertIntEqual(t, got, test.want)
 		})
 	}
@@ -77,7 +77,7 @@ func TestCountCombinations(t *testing.T) {
 func BenchmarkCountCombinations(b *testing.B) {
 	input := []int{1, 2, 3, 4, 5, 6}
 	for i := 0; i < b.N; i++ {
-		CountCombinations(input, 0, input[len(input)-1])
+		CountCombinations(input)
 	}
 }
 

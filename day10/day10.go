@@ -54,28 +54,14 @@ func FindJoltDifferences(sorted []int) []int {
 	return diffCount
 }
 
-func CountCombinations(items []int, depth int, last int) (combinations int) {
-	if depth >= len(items) {
-		return
+func CountCombinations(sorted []int) int {
+	counts := map[int]int{0: 1}
+	last := sorted[len(sorted)-1] + 3
+	items := append(sorted, last)
+	for _, item := range items {
+		counts[item] = counts[item-3] + counts[item-2] + counts[item-1]
 	}
-	if depth == 0 && items[depth] > 3 {
-		return
-	}
-	if depth > 0 && items[depth]-items[depth-1] > 3 {
-		return
-	}
-
-	combinations += CountCombinations(items, depth+1, last)
-
-	skip := make([]int, depth)
-	copy(skip, items[:depth])
-	skip = append(skip, items[depth+1:]...)
-	combinations += CountCombinations(skip, depth, last)
-
-	if items[depth] == last {
-		combinations++
-	}
-	return
+	return counts[last]
 }
 
 func main() {
@@ -89,6 +75,6 @@ func main() {
 
 	input := strings.Trim(string(content), "\n")
 	items := Sort(Parse(input))
-	result := CountCombinations(items, 0, items[len(items)-1])
+	result := CountCombinations(items)
 	fmt.Println(result)
 }
