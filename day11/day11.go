@@ -1,72 +1,59 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 )
 
-func MarkAdjacent(i int, width int, adjacent map[int]int) {
-	adjacent[i+width]++
-	adjacent[i-width]++
+func CountAdjacent(i int, width int, seats string) (count int) {
+	adjacents := []int{i + width, i - width}
 	// If not at the end of row
 	if (i+1)%width != 0 {
-		adjacent[i+1]++
-		adjacent[i+width+1]++
-		adjacent[i-width+1]++
+		adjacents = append(adjacents, i+1)
+		adjacents = append(adjacents, i+width+1)
+		adjacents = append(adjacents, i-width+1)
 	}
 	// If not at the start of row
 	if i%width != 0 {
-		adjacent[i-1]++
-		adjacent[i+width-1]++
-		adjacent[i-width-1]++
+		adjacents = append(adjacents, i-1)
+		adjacents = append(adjacents, i+width-1)
+		adjacents = append(adjacents, i-width-1)
 	}
-}
-
-func CountAdjacent(i int, width int, adjacent map[int]int) (count int) {
-	count += adjacent[i+width]
-	count += adjacent[i-width]
-	// If not at the end of row
-	if (i+1)%width != 0 {
-		count += adjacent[i+1]
-		count += adjacent[i+width+1]
-		count += adjacent[i-width+1]
-	}
-	// If not at the start of row
-	if i%width != 0 {
-		count += adjacent[i-1]
-		count += adjacent[i+width-1]
-		count += adjacent[i-width-1]
+	for _, loc := range adjacents {
+		if loc < 0 || loc >= len(seats) {
+			continue
+		}
+		if seats[loc] == '#' {
+			count++
+		}
 	}
 	return
 }
 
-func replaceAtIndex(in string, r rune, i int) string {
-	out := []rune(in)
-	out[i] = r
-	return string(out)
-}
-
-func Evaluate(seats string, width int) string {
-	adjacent := make(map[int]int, 0)
+func Evaluate(seats string, width int) (result string) {
 	for i, seat := range seats {
-		if seat == '#' {
-			MarkAdjacent(i, width, adjacent)
-		}
-	}
-	for i, seat := range seats {
-		adjacentCount := CountAdjacent(i, width, adjacent)
+		adjacentCount := CountAdjacent(i, width, seats)
 		switch seat {
 		case 'L':
 			if adjacentCount == 0 {
-				seats = replaceAtIndex(seats, '#', i)
+				result += "#"
+			} else {
+				result += string(seat)
 			}
 		case '#':
 			if adjacentCount >= 4 {
-				seats = replaceAtIndex(seats, 'L', i)
+				result += "L"
+			} else {
+				result += string(seat)
 			}
+		default:
+			result += string(seat)
 		}
 	}
-	return seats
+	return
 }
 
 func CountOccupiedSeats(input string) int {
@@ -79,7 +66,20 @@ func CountOccupiedSeats(input string) int {
 			break
 		}
 		settled = next
-		fmt.Println(settled)
 	}
 	return strings.Count(settled, "#")
+}
+
+func main() {
+	flag.Parse()
+	filename := flag.Arg(0)
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	input := strings.Trim(string(content), "\n")
+	result := CountOccupiedSeats(input)
+	fmt.Println(result)
 }
