@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+type Counter func(int, int, string) int
+
 func CountAdjacent(i int, width int, seats string) (count int) {
 	adjacents := []int{i + width, i - width}
 	// If not at the end of row
@@ -33,18 +35,18 @@ func CountAdjacent(i int, width int, seats string) (count int) {
 	return
 }
 
-func Evaluate(seats string, width int) (result string) {
+func Evaluate(seats string, width int, occupiedLimit int, countOccupied Counter) (result string) {
 	for i, seat := range seats {
-		adjacentCount := CountAdjacent(i, width, seats)
+		occupiedCount := countOccupied(i, width, seats)
 		switch seat {
 		case 'L':
-			if adjacentCount == 0 {
+			if occupiedCount == 0 {
 				result += "#"
 			} else {
 				result += string(seat)
 			}
 		case '#':
-			if adjacentCount >= 4 {
+			if occupiedCount >= occupiedLimit {
 				result += "L"
 			} else {
 				result += string(seat)
@@ -56,12 +58,12 @@ func Evaluate(seats string, width int) (result string) {
 	return
 }
 
-func CountOccupiedSeats(input string) int {
+func CountOccupiedSeats(input string, occupiedLimit int, countOccupied Counter) int {
 	width := strings.Index(input, "\n")
 	seats := strings.ReplaceAll(input, "\n", "")
-	settled := Evaluate(seats, width)
+	settled := Evaluate(seats, width, occupiedLimit, countOccupied)
 	for {
-		next := Evaluate(settled, width)
+		next := Evaluate(settled, width, occupiedLimit, countOccupied)
 		if next == settled {
 			break
 		}
@@ -80,6 +82,6 @@ func main() {
 	}
 
 	input := strings.Trim(string(content), "\n")
-	result := CountOccupiedSeats(input)
+	result := CountOccupiedSeats(input, 4, CountAdjacent)
 	fmt.Println(result)
 }

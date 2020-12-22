@@ -16,7 +16,7 @@ L.LLLLL.LL
 LLLLLLLLLL
 L.LLLLLL.L
 L.LLLLL.LL`
-	got := CountOccupiedSeats(input)
+	got := CountOccupiedSeats(input, 4, CountAdjacent)
 	want := 37
 	assertIntEqual(t, got, want)
 }
@@ -33,7 +33,7 @@ L.LLLLL.LL
 LLLLLLLLLL
 L.LLLLLL.L
 L.LLLLL.LL`, "\n", "")
-		got := Evaluate(input, 10)
+		got := Evaluate(input, 10, 4, CountAdjacent)
 		want := strings.ReplaceAll(`#.##.##.##
 #######.##
 #.#.#..#..
