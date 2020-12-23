@@ -35,6 +35,113 @@ func CountAdjacent(i int, width int, seats string) (count int) {
 	return
 }
 
+func look(from int, width int, seats string, dx int, dy int) int {
+	i := 1
+	for {
+		x := i * dx
+		y := i * dy
+
+		if x < 0 || x >= width {
+			return 0
+		}
+		loc := i + (x + (y * width))
+		if loc < 0 || loc >= len(seats) {
+			return 0
+		}
+		switch seats[loc] {
+		case '#':
+			return 1
+		case 'L':
+			return 0
+		}
+		i++
+	}
+}
+
+func CountLineOfSight(i int, width int, seats string) (count int) {
+	// N
+	for loc := i - width; loc >= 0; loc -= width {
+		if seats[loc] == '#' {
+			//fmt.Printf("North at %d\n", loc)
+			count++
+			break
+		} else if seats[loc] == 'L' {
+			break
+		}
+	}
+	// S
+	for loc := i + width; loc < len(seats); loc += width {
+		if seats[loc] == '#' {
+			//fmt.Printf("South at %d\n", loc)
+			count++
+			break
+		} else if seats[loc] == 'L' {
+			break
+		}
+	}
+	// E
+	for loc := i + 1; loc/width == i/width && loc < len(seats); loc += 1 {
+		if seats[loc] == '#' {
+			//fmt.Printf("East at %d\n", loc)
+			count++
+			break
+		} else if seats[loc] == 'L' {
+			break
+		}
+	}
+	// W
+	for loc := i - 1; loc/width == i/width && loc >= 0; loc -= 1 {
+		if seats[loc] == '#' {
+			//fmt.Printf("West at %d\n", loc)
+			count++
+			break
+		} else if seats[loc] == 'L' {
+			break
+		}
+	}
+	// NE
+	for loc := i - (width + 1); loc >= 0; loc -= (width + 1) {
+		if seats[loc] == '#' {
+			//fmt.Printf("North east at %d\n", loc)
+			count++
+			break
+		} else if seats[loc] == 'L' {
+			break
+		}
+	}
+	// NW
+	for loc := i - (width + 1); loc >= 0; loc -= (width + 1) {
+		if seats[loc] == '#' {
+			//fmt.Printf("North west at %d\n", loc)
+			count++
+			break
+		} else if seats[loc] == 'L' {
+			break
+		}
+	}
+	// SE
+	for loc := i + (width + 1); loc < len(seats); loc += (width + 1) {
+		if seats[loc] == '#' {
+			//fmt.Printf("South east at %d\n", loc)
+			count++
+			break
+		} else if seats[loc] == 'L' {
+			break
+		}
+	}
+	// SW
+	for loc := i + (width - 1); loc < len(seats); loc += (width - 1) {
+		if seats[loc] == '#' {
+			//fmt.Printf("South west at %d\n", loc)
+			count++
+			break
+		} else if seats[loc] == 'L' {
+			break
+		}
+	}
+	return
+}
+
 func Evaluate(seats string, width int, occupiedLimit int, countOccupied Counter) (result string) {
 	for i, seat := range seats {
 		occupiedCount := countOccupied(i, width, seats)
