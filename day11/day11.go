@@ -40,14 +40,15 @@ func look(from int, width int, seats string, dx int, dy int) int {
 	for {
 		x := i * dx
 		y := i * dy
-
-		if x < 0 || x >= width {
+		if (from+x)/width != from/width {
 			return 0
 		}
-		loc := i + (x + (y * width))
+
+		loc := from + (x + (y * width))
 		if loc < 0 || loc >= len(seats) {
 			return 0
 		}
+
 		switch seats[loc] {
 		case '#':
 			return 1
@@ -59,86 +60,14 @@ func look(from int, width int, seats string, dx int, dy int) int {
 }
 
 func CountLineOfSight(i int, width int, seats string) (count int) {
-	// N
-	for loc := i - width; loc >= 0; loc -= width {
-		if seats[loc] == '#' {
-			//fmt.Printf("North at %d\n", loc)
-			count++
-			break
-		} else if seats[loc] == 'L' {
-			break
-		}
-	}
-	// S
-	for loc := i + width; loc < len(seats); loc += width {
-		if seats[loc] == '#' {
-			//fmt.Printf("South at %d\n", loc)
-			count++
-			break
-		} else if seats[loc] == 'L' {
-			break
-		}
-	}
-	// E
-	for loc := i + 1; loc/width == i/width && loc < len(seats); loc += 1 {
-		if seats[loc] == '#' {
-			//fmt.Printf("East at %d\n", loc)
-			count++
-			break
-		} else if seats[loc] == 'L' {
-			break
-		}
-	}
-	// W
-	for loc := i - 1; loc/width == i/width && loc >= 0; loc -= 1 {
-		if seats[loc] == '#' {
-			//fmt.Printf("West at %d\n", loc)
-			count++
-			break
-		} else if seats[loc] == 'L' {
-			break
-		}
-	}
-	// NE
-	for loc := i - (width + 1); loc >= 0; loc -= (width + 1) {
-		if seats[loc] == '#' {
-			//fmt.Printf("North east at %d\n", loc)
-			count++
-			break
-		} else if seats[loc] == 'L' {
-			break
-		}
-	}
-	// NW
-	for loc := i - (width + 1); loc >= 0; loc -= (width + 1) {
-		if seats[loc] == '#' {
-			//fmt.Printf("North west at %d\n", loc)
-			count++
-			break
-		} else if seats[loc] == 'L' {
-			break
-		}
-	}
-	// SE
-	for loc := i + (width + 1); loc < len(seats); loc += (width + 1) {
-		if seats[loc] == '#' {
-			//fmt.Printf("South east at %d\n", loc)
-			count++
-			break
-		} else if seats[loc] == 'L' {
-			break
-		}
-	}
-	// SW
-	for loc := i + (width - 1); loc < len(seats); loc += (width - 1) {
-		if seats[loc] == '#' {
-			//fmt.Printf("South west at %d\n", loc)
-			count++
-			break
-		} else if seats[loc] == 'L' {
-			break
-		}
-	}
+	count += look(i, width, seats, 0, -1)  // N
+	count += look(i, width, seats, 0, 1)   // S
+	count += look(i, width, seats, 1, 0)   // E
+	count += look(i, width, seats, -1, 0)  // W
+	count += look(i, width, seats, 1, -1)  // NE
+	count += look(i, width, seats, -1, -1) // NW
+	count += look(i, width, seats, 1, 1)   // SE
+	count += look(i, width, seats, -1, 1)  // SW
 	return
 }
 
@@ -189,6 +118,6 @@ func main() {
 	}
 
 	input := strings.Trim(string(content), "\n")
-	result := CountOccupiedSeats(input, 4, CountAdjacent)
+	result := CountOccupiedSeats(input, 5, CountLineOfSight)
 	fmt.Println(result)
 }
