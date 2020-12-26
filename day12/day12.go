@@ -11,8 +11,8 @@ import (
 )
 
 type Position struct {
-	x float64
-	y float64
+	x int
+	y int
 }
 
 type Action struct {
@@ -50,29 +50,28 @@ func NavigatePath(path []Action) Position {
 		valueFloat := float64(step.value)
 		switch step.action {
 		case 'N':
-			pos.y -= valueFloat
+			pos.y -= step.value
 		case 'S':
-			pos.y += valueFloat
+			pos.y += step.value
 		case 'E':
-			pos.x += valueFloat
+			pos.x += step.value
 		case 'W':
-			pos.x -= valueFloat
+			pos.x -= step.value
 		case 'L':
-			direction = addAngle(direction, valueFloat)
+			direction = addAngle(direction, -valueFloat)
 		case 'R':
-			direction = addAngle(direction, +valueFloat)
+			direction = addAngle(direction, valueFloat)
 		case 'F':
 			radians := direction * math.Pi / 180
-			pos.x += valueFloat * math.Cos(radians)
-			pos.y += valueFloat * math.Sin(radians)
+			pos.x += int(math.Round(valueFloat * math.Cos(radians)))
+			pos.y += int(math.Round(valueFloat * math.Sin(radians)))
 		}
-		fmt.Println(pos)
 	}
 	return pos
 }
 
-func ManhattanDistance(pos Position) float64 {
-	return math.Abs(pos.x) + math.Abs(pos.y)
+func ManhattanDistance(pos Position) int {
+	return int(math.Round(math.Abs(float64(pos.x)) + math.Abs(float64(pos.y))))
 }
 
 func main() {
@@ -89,5 +88,5 @@ func main() {
 	finalPosition := NavigatePath(path)
 	fmt.Println(finalPosition)
 	result := ManhattanDistance(finalPosition)
-	fmt.Println(math.Round(result))
+	fmt.Println(result)
 }
