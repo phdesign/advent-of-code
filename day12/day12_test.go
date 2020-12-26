@@ -43,6 +43,27 @@ F11`
 	})
 }
 
+func TestNavigateWaypoint(t *testing.T) {
+	t.Run("", func(t *testing.T) {
+		input := `F10
+N3
+F7
+R90
+F11`
+		got := NavigateWaypoint(Parse(input))
+		want := Position{214, 72}
+		assertPositionEqual(t, got, want)
+	})
+	t.Run("", func(t *testing.T) {
+		t.SkipNow()
+		input := `R90
+F2`
+		got := NavigateWaypoint(Parse(input))
+		want := Position{-2, 20}
+		assertPositionEqual(t, got, want)
+	})
+}
+
 func TestManhattanDistance(t *testing.T) {
 	got := ManhattanDistance(Position{-17, 8})
 	want := 25

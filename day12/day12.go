@@ -15,6 +15,26 @@ type Position struct {
 	y int
 }
 
+func (p *Position) rotate(degrees float64) {
+	x := float64(p.x)
+	y := float64(p.y)
+	radians := degrees * math.Pi / 180
+	angle := math.Atan(y / x)
+	distance := math.Sqrt(x*x + y*y)
+
+	newAngle := angle + radians
+	newX := math.Cos(newAngle) * distance
+	newY := math.Sin(newAngle) * distance
+
+	p.x = int(math.Round(newX))
+	p.y = int(math.Round(newY))
+}
+
+func (p *Position) add(other Position) {
+	p.x += other.x
+	p.y += other.y
+}
+
 type Action struct {
 	action rune
 	value  int
@@ -70,6 +90,34 @@ func NavigatePath(path []Action) Position {
 	return pos
 }
 
+func NavigateWaypoint(path []Action) Position {
+	waypoint := Position{10, 1}
+	ship := Position{0, 0}
+	for _, step := range path {
+		valueFloat := float64(step.value)
+		switch step.action {
+		case 'N':
+			waypoint.y += step.value
+		case 'S':
+			waypoint.y -= step.value
+		case 'E':
+			waypoint.x += step.value
+		case 'W':
+			waypoint.x -= step.value
+		case 'L':
+			waypoint.rotate(-valueFloat)
+		case 'R':
+			waypoint.rotate(valueFloat)
+		case 'F':
+			for i := 0; i < step.value; i++ {
+				ship.add(waypoint)
+			}
+		}
+		fmt.Printf("waypoint: %v, ship: %v\n", waypoint, ship)
+	}
+	return ship
+}
+
 func ManhattanDistance(pos Position) int {
 	return int(math.Round(math.Abs(float64(pos.x)) + math.Abs(float64(pos.y))))
 }
@@ -86,7 +134,6 @@ func main() {
 	input := strings.Trim(string(content), "\n")
 	path := Parse(input)
 	finalPosition := NavigatePath(path)
-	fmt.Println(finalPosition)
 	result := ManhattanDistance(finalPosition)
 	fmt.Println(result)
 }
