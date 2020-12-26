@@ -51,15 +51,35 @@ F7
 R90
 F11`
 		got := NavigateWaypoint(Parse(input))
-		want := Position{214, 72}
+		want := Position{214, -72}
 		assertPositionEqual(t, got, want)
 	})
 	t.Run("", func(t *testing.T) {
-		t.SkipNow()
-		input := `R90
+		input := `L90
 F2`
 		got := NavigateWaypoint(Parse(input))
 		want := Position{-2, 20}
+		assertPositionEqual(t, got, want)
+	})
+	t.Run("", func(t *testing.T) {
+		input := `L180
+F1`
+		got := NavigateWaypoint(Parse(input))
+		want := Position{-10, -1}
+		assertPositionEqual(t, got, want)
+	})
+	t.Run("", func(t *testing.T) {
+		input := `L270
+F1`
+		got := NavigateWaypoint(Parse(input))
+		want := Position{1, -10}
+		assertPositionEqual(t, got, want)
+	})
+	t.Run("", func(t *testing.T) {
+		input := `R90
+F1`
+		got := NavigateWaypoint(Parse(input))
+		want := Position{1, -10}
 		assertPositionEqual(t, got, want)
 	})
 }

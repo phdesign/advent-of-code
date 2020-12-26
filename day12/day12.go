@@ -105,15 +105,14 @@ func NavigateWaypoint(path []Action) Position {
 		case 'W':
 			waypoint.x -= step.value
 		case 'L':
-			waypoint.rotate(-valueFloat)
-		case 'R':
 			waypoint.rotate(valueFloat)
+		case 'R':
+			waypoint.rotate(-valueFloat)
 		case 'F':
 			for i := 0; i < step.value; i++ {
 				ship.add(waypoint)
 			}
 		}
-		fmt.Printf("waypoint: %v, ship: %v\n", waypoint, ship)
 	}
 	return ship
 }
@@ -133,7 +132,7 @@ func main() {
 
 	input := strings.Trim(string(content), "\n")
 	path := Parse(input)
-	finalPosition := NavigatePath(path)
+	finalPosition := NavigateWaypoint(path)
 	result := ManhattanDistance(finalPosition)
 	fmt.Println(result)
 }
