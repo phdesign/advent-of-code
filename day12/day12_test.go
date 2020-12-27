@@ -55,6 +55,16 @@ F11`
 		assertPositionEqual(t, got, want)
 	})
 	t.Run("", func(t *testing.T) {
+		input := `F1
+L180
+F2
+R180
+F4`
+		got := ManhattanDistance(NavigateWaypoint(Parse(input)))
+		want := 33
+		assertIntEqual(t, got, want)
+	})
+	t.Run("", func(t *testing.T) {
 		input := `L90
 F2`
 		got := NavigateWaypoint(Parse(input))
@@ -82,6 +92,13 @@ F1`
 		want := Position{1, -10}
 		assertPositionEqual(t, got, want)
 	})
+}
+
+func TestRotate(t *testing.T) {
+	got := Position{-10, -1}
+	got.rotate(180)
+	want := Position{10, 1}
+	assertPositionEqual(t, got, want)
 }
 
 func TestManhattanDistance(t *testing.T) {

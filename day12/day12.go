@@ -15,19 +15,16 @@ type Position struct {
 	y int
 }
 
+// Uses rotation matrix https://en.wikipedia.org/wiki/Rotation_matrix
 func (p *Position) rotate(degrees float64) {
 	x := float64(p.x)
 	y := float64(p.y)
 	radians := degrees * math.Pi / 180
-	angle := math.Atan(y / x)
-	distance := math.Sqrt(x*x + y*y)
+	cos := math.Cos(radians)
+	sin := math.Sin(radians)
 
-	newAngle := angle + radians
-	newX := math.Cos(newAngle) * distance
-	newY := math.Sin(newAngle) * distance
-
-	p.x = int(math.Round(newX))
-	p.y = int(math.Round(newY))
+	p.x = int(math.Round((x * cos) - (y * sin)))
+	p.y = int(math.Round((x * sin) + (y * cos)))
 }
 
 func (p *Position) add(other Position) {
@@ -113,6 +110,7 @@ func NavigateWaypoint(path []Action) Position {
 				ship.add(waypoint)
 			}
 		}
+		//fmt.Printf("ship: %v, waypoint %v\n", ship, waypoint)
 	}
 	return ship
 }
